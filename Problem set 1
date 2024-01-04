@@ -1,0 +1,111 @@
+#################################################################
+### Problem set 1
+
+#################################################################
+### 1.1
+
+import numpy as np 
+
+total_cost = float(input("Total cost of the house: "))
+annual_salary = float(input("Anual salary: "))
+portion_saved = float(input("Portion of your salary to save: "))
+r = 0.04
+portion_down_payment = total_cost*0.25
+
+current_savings = 0
+months_saved = 0
+
+while (current_savings < portion_down_payment):
+    interest_savings = current_savings*r/12
+    salary_savings = annual_salary/12*portion_saved
+    current_savings = current_savings+interest_savings+salary_savings
+    months_saved += 1
+
+print(months_saved)
+
+#################################################################
+### 1.2
+
+
+total_cost = float(input("Total cost of the house: "))
+annual_salary = float(input("Anual salary: "))
+portion_saved = float(input("Portion of your salary to save: "))
+semi_annual_raise = float(input("Semi-annual raise rate: "))
+r = 0.04
+portion_down_payment = total_cost*0.25
+
+current_savings = 0
+months_saved = 0
+
+while (current_savings < portion_down_payment):
+    interest_savings = current_savings*r/12
+    salary_savings = annual_salary/12*portion_saved
+    current_savings = current_savings+interest_savings+salary_savings
+    months_saved += 1
+    if (months_saved % 6 == 0):
+        annual_salary = annual_salary*(1+semi_annual_raise)
+        
+print(months_saved)
+
+#################################################################
+### 1.3
+
+
+# define input parameters
+
+total_cost = 1000000 #float(input("Total cost of the house: "))
+annual_salary = float(input("Anual salary: "))
+semi_annual_raise = 0.07 #float(input("Semi-annual raise rate: "))
+r = 0.04
+portion_down_payment = total_cost*0.25
+current_savings = 0
+months = 36
+
+# set initial conditions for the bisection search
+steps_in_bisection_search = 0 #initializing
+low = 0 # lowest value
+high = 10000 # highest value
+guess = int((low + high)/2)  # bisection search formula
+guessed_savings_rate = guess/10000 # dividing by 10000 ensures 2 decimla accuracy 
+
+
+# define a function to calculate the current savings accounting for salary increase every 6 months
+def savings (current_savings, portion_down_payment, annual_salary, semi_annual_raise, guessed_savings_rate):
+    
+    for months in range(0,36):
+        if months % 6 == 0 and months != 0:
+            annual_salary += annual_salary*semi_annual_raise
+            
+        current_savings += guessed_savings_rate*annual_salary/12+current_savings*r/12
+        
+        
+    return current_savings
+
+# calculate current savings assuming the highest possible savings rate (100%)
+current_savings = savings(0, portion_down_payment, annual_salary, semi_annual_raise, high/10000)
+
+# determine if we are able to save for a down paymnent within the 36 months
+if current_savings < portion_down_payment:
+    print ("It is not possible to pay for the down payment in 3 years")
+
+# if we can save in time, initialize the bisection search with the middle value 
+else: 
+    current_savings = savings(0, portion_down_payment, annual_salary, semi_annual_raise, guessed_savings_rate)
+    steps_in_bisection_search += 1
+    
+    # create a while loop that reinitializes the bisection search with a new value if we are not within $100 of our savings goal
+    # if the savings amount is too low, begin the next search with a higher lower guess, otherwise, lower the high guess. This will converge to the ideal savings rate over many iterations
+    while abs(portion_down_payment - current_savings) >= 100:
+        if portion_down_payment > current_savings:
+            low = guess 
+        else:
+            high = guess
+        guess = int((low + high)/2)
+        guessed_savings_rate = guess/10000
+        
+        current_savings = int(savings(0, portion_down_payment, annual_salary, semi_annual_raise, guessed_savings_rate))
+        steps_in_bisection_search += 1 # this keeps track of how many iterations were run in the search
+    
+    # once the ideal rate is determined, print the results
+    print("Best Savings Rate: ", guessed_savings_rate)
+    print("Steps in bisection search: ", steps_in_bisection_search)
