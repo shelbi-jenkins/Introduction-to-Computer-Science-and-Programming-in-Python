@@ -1,0 +1,12 @@
+#################################################################
+###  Problem set 1
+
+import numpy as np 
+
+x = float(input("Choose value for x"))
+print(x)
+y = float(input("Choose value for y"))
+print(y)
+
+print(x**y)
+print(np.log2(x))
